@@ -1,0 +1,42 @@
+# config.yml
+
+entra_id:
+  tenant_id:     "your-tenant-id"
+  client_id:     "your-client-id"
+  client_secret: "your-client-secret"
+  domain:        "yourtenant.onmicrosoft.com"
+  poll_interval: 60
+
+redis:
+  host: "localhost"
+  port: 6379
+
+vms:
+  - name:     "vm-1"
+    ip:       "10.0.1.4"
+    username: "marwan"
+    password: "LabP@ssw0rd2026!"
+
+  - name:     "vm-2"
+    ip:       "10.0.1.5"
+    username: "marwan"
+    password: "LabP@ssw0rd2026!"
+
+  # Add new VM here:
+  # - name:     "vm-3"
+  #   ip:       "10.0.1.6"
+  #   username: "marwan"
+  #   password: "LabP@ssw0rd2026!"
+
+buffer:
+  max_size: 1000
+
+scoring:
+  warmup_hours:      4
+  action_after_mins: 30
+  alert_threshold:   0.50
+  mfa_threshold:     0.70
+  block_threshold:   0.85
+
+actions:
+  noc_webhook: "https://your-webhook-url"
