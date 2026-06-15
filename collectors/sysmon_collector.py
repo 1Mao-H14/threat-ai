@@ -88,6 +88,4 @@ foreach ($e in $events) {{
         while True:
             for vm in self.vms:
                 self._collect_vm(vm)
-            time.sleep(
-                self.config["entra_id"]["poll_interval"]
-            )
+            time.sleep(10)

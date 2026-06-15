@@ -1,10 +1,10 @@
 # config.yml
 
 entra_id:
-  tenant_id:     "your-tenant-id"
-  client_id:     "your-client-id"
-  client_secret: "your-client-secret"
-  domain:        "yourtenant.onmicrosoft.com"
+  tenant_id:     "787e711e-1364-4fdc-ba66-b046d0459878"
+  client_id:     "53c53e6d-7ed0-4bf2-b853-1b8cb7a51ea5"
+  client_secret: "2rx8Q~x_cEprC5cfhhq0lOhRuMYiZtWQoJyxsc8s"
+  domain:        "marwanhamdaoui2020gmail.onmicrosoft.com"
   poll_interval: 60
 
 redis:
@@ -12,15 +12,10 @@ redis:
   port: 6379
 
 vms:
-  - name:     "vm-1"
-    ip:       "10.0.1.4"
-    username: "marwan"
-    password: "LabP@ssw0rd2026!"
-
-  - name:     "vm-2"
-    ip:       "10.0.1.5"
-    username: "marwan"
-    password: "LabP@ssw0rd2026!"
+  - name:     "AliceVm"
+    ip:       "10.0.0.5"
+    username: "AliceVm"
+    password: "L@b-passw0rd_2026"
 
   # Add new VM here:
   # - name:     "vm-3"
@@ -32,11 +27,13 @@ buffer:
   max_size: 1000
 
 scoring:
-  warmup_hours:      4
-  action_after_mins: 30
+  warmup_hours:     0.03
+  action_after_mins: 1
   alert_threshold:   0.50
   mfa_threshold:     0.70
   block_threshold:   0.85
 
 actions:
   noc_webhook: "https://your-webhook-url"
+  block_users: true
+  force_mfa:   true
