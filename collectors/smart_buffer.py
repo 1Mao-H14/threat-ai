@@ -34,7 +34,11 @@ class SmartBuffer:
     ]
 
     def __init__(self, config: dict):
-        self.max_size = config["buffer"]["max_size"]
+        self.max_size     = config["buffer"]["max_size"]
+        self.identity_map = {
+            k.lower(): v.lower()
+            for k, v in config.get("identity_map", {}).items()
+        }
         self.r        = redis.Redis(
             host = config["redis"]["host"],
             port = config["redis"]["port"]
@@ -55,6 +59,15 @@ class SmartBuffer:
         user = event.get("user", "unknown")
         if not user or user == "unknown":
             return
+
+        # Normalize identity: Sysmon may report a local/AzureAD
+        # session name (e.g. "alicevm") that differs from the
+        # real Entra ID UPN prefix (e.g. "alice"). Map it so all
+        # collectors converge on one profile per real person.
+        canonical = self.identity_map.get(user.lower(), user.lower())
+        if canonical != user:
+            event["user"] = canonical
+        user = canonical
 
         key           = f"buffer:{user}"
         priority      = self.get_priority(event)

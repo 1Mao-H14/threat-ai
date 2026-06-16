@@ -26,6 +26,13 @@ vms:
 buffer:
   max_size: 1000
 
+
+identity_map:
+  alicevm:   alice
+  charliem:  charlie
+  # charliem is a guess - confirm the real string via whoami
+  # on CharlieVm and correct this key if it differs.
+
 scoring:
   warmup_hours:     0.03
   action_after_mins: 1
@@ -34,6 +41,6 @@ scoring:
   block_threshold:   0.85
 
 actions:
-  noc_webhook: "https://your-webhook-url"
+  noc_webhook: ""
   block_users: true
   force_mfa:   true

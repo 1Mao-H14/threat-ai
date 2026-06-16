@@ -90,6 +90,7 @@ def parse_event_id_3(message: str) -> dict:
     dst_ip   = extract_field(message, "DestinationIp")
     dst_port = extract_field(message, "DestinationPort")
     image    = extract_field(message, "Image").lower()
+    user     = extract_field(message, "User").lower()
 
     try:
         dst_port = int(dst_port)
@@ -109,6 +110,7 @@ def parse_event_id_3(message: str) -> dict:
     SUSPICIOUS_PORTS = {4444,1337,8080,9001,6666,31337}
 
     return {
+        "user":                user.split("\\")[-1],
         "dst_ip":              dst_ip,
         "dst_port":            dst_port,
         "is_external_conn":    int(not is_private(dst_ip)),
@@ -122,6 +124,7 @@ def parse_event_id_10(message: str) -> dict:
     target      = extract_field(message, "TargetImage").lower()
     source      = extract_field(message, "SourceImage").lower()
     access_mask = extract_field(message, "GrantedAccess").lower()
+    user        = extract_field(message, "SourceUser").lower()
 
     DUMP_MASKS    = {"0x1010","0x1410","0x1fffff","0x1f3fff"}
     LEGIT_CALLERS = {"csrss.exe","wininit.exe","services.exe","lsm.exe"}
@@ -131,6 +134,7 @@ def parse_event_id_10(message: str) -> dict:
     is_legit     = int(source.split("\\")[-1] in LEGIT_CALLERS)
 
     return {
+        "user":             user.split("\\")[-1],
         "is_lsass_access":  is_lsass,
         "is_dump_mask":     is_dump_mask,
         "is_legit_caller":  is_legit,
@@ -142,6 +146,7 @@ def parse_event_id_11(message: str) -> dict:
     """File Create."""
     path    = extract_field(message, "TargetFilename").lower()
     process = extract_field(message, "Image").lower()
+    user    = extract_field(message, "User").lower()
 
     SUSPICIOUS_PATHS = [
         "\\appdata\\roaming",
@@ -158,6 +163,7 @@ def parse_event_id_11(message: str) -> dict:
     file_ext    = "." + path.split(".")[-1] if "." in path else ""
 
     return {
+        "user":               user.split("\\")[-1],
         "file_path":          path,
         "file_extension":     file_ext,
         "is_suspicious_path": int(any(p in path for p in SUSPICIOUS_PATHS)),
@@ -172,11 +178,13 @@ def parse_event_id_11(message: str) -> dict:
 
 def parse_event_id_13(message: str) -> dict:
     """Registry Set."""
-    key = extract_field(message, "TargetObject").lower()
+    key  = extract_field(message, "TargetObject").lower()
+    user = extract_field(message, "User").lower()
 
     RUN_KEYS = ["\\run\\","\\runonce\\","\\winlogon","\\services\\"]
 
     return {
+        "user":               user.split("\\")[-1],
         "registry_key":       key,
         "is_persistence_key": int(any(k in key for k in RUN_KEYS)),
     }

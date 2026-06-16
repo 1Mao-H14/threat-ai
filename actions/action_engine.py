@@ -63,15 +63,21 @@ class ActionEngine:
 
     # ── GET USER ID ───────────────────────────
     def _get_user_id(self, user: str) -> str | None:
+        upn = f"{user}@{self.domain}"
         try:
             r = requests.get(
-                f"{self.GRAPH}/users/{user}@{self.domain}",
+                f"{self.GRAPH}/users/{upn}",
                 headers=self._headers()
             )
             if r.status_code == 200:
                 return r.json()["id"]
+            else:
+                logger.error(
+                    f"Get user ID failed for '{upn}': "
+                    f"HTTP {r.status_code} — {r.text}"
+                )
         except Exception as e:
-            logger.error(f"Get user ID error: {e}")
+            logger.error(f"Get user ID error for '{upn}': {e}")
         return None
 
     # ── BLOCK USER ────────────────────────────

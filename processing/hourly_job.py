@@ -20,7 +20,7 @@ def get_and_clear_buffer(r, user: str) -> list:
     return events
 
 
-if should_act(profile, config):
+def should_act(profile, config):
     """Check if enough time passed to start acting."""
     try:
         created_at   = datetime.fromisoformat(
@@ -94,7 +94,7 @@ def run_pipeline(config: dict):
                 )
 
             # Take action if ready
-            if should_act(profile.__dict__, config):
+            if should_act(profile, config):
                 if detections:
                     top          = detections[0]
                     final_score  = max(score, top.confidence)
