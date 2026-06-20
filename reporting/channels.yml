@@ -1,0 +1,62 @@
+# reporting/channels.yml
+#
+# Add a new destination by adding ONE entry below — no code change needed,
+# no redeploy of logic, works for any of the 100+ services Apprise supports
+# (Gmail, Outlook/O365, Teams, Slack, WhatsApp/Twilio, SMS, PagerDuty, ...).
+#
+# Find the right URL format for your target service here:
+#   https://github.com/caronc/apprise/wiki
+#
+# Fields:
+#   url           Apprise service URL. Use ${ENV_VAR} for any secret —
+#                 never paste a real token/password into this file.
+#   audience      executive | technical | both
+#   min_severity  info | medium | high | critical
+#                 (channel fires at this severity AND above)
+#   enabled       true | false — flip off without deleting the entry
+
+channels:
+
+  # ── Outlook / Microsoft 365 — full SOC distribution list ──────────
+  - name: soc_outlook
+    url: "o365://${O365_TENANT_ID}:${O365_CLIENT_ID}@${O365_CLIENT_SECRET}/?to=soc-team@harmonytech.com"
+    audience: technical
+    min_severity: info
+    enabled: true
+
+  # ── Gmail — CISO personal inbox, high severity only ───────────────
+  - name: ciso_gmail
+    url: "mailto://alerts.bot:${GMAIL_APP_PASSWORD}@gmail.com?to=ciso@harmonytech.com"
+    audience: executive
+    min_severity: high
+    enabled: true
+
+  # ── Microsoft Teams — SOC channel incoming webhook ─────────────────
+  - name: soc_teams
+    url: "msteams://${TEAMS_TEAM_ID}/${TEAMS_TENANT_ID}/${TEAMS_ALTID}/${TEAMS_GROUP_OWNER}"
+    audience: technical
+    min_severity: medium
+    enabled: true
+
+  # ── Slack — NOC operations channel ──────────────────────────────────
+  - name: noc_slack
+    url: "slack://${SLACK_TOKEN_A}/${SLACK_TOKEN_B}/${SLACK_TOKEN_C}"
+    audience: technical
+    min_severity: high
+    enabled: true
+
+  # ── WhatsApp via Twilio — management, critical incidents only ───────
+  # Note: business-initiated WhatsApp messages need an approved sender +
+  # pre-approved message template on Twilio's side, or delivery will fail.
+  - name: management_whatsapp
+    url: "twilio://${TWILIO_SID}:${TWILIO_TOKEN}@${TWILIO_FROM}/${MANAGER_PHONE}"
+    audience: executive
+    min_severity: critical
+    enabled: false
+
+  # ── Example: add a second exec via SMS — copy/paste, change nothing else
+  # - name: ops_director_sms
+  #   url: "twilio://${TWILIO_SID}:${TWILIO_TOKEN}@${TWILIO_FROM}/${DIRECTOR_PHONE}"
+  #   audience: executive
+  #   min_severity: critical
+  #   enabled: true

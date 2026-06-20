@@ -181,7 +181,30 @@ def parse_event_id_13(message: str) -> dict:
     key  = extract_field(message, "TargetObject").lower()
     user = extract_field(message, "User").lower()
 
-    RUN_KEYS = ["\\run\\","\\runonce\\","\\winlogon","\\services\\"]
+    # FIX: "\services\" was removed from this list.
+    #
+    # Windows constantly writes to
+    # HKLM\SYSTEM\CurrentControlSet\Services\... during completely normal
+    # operation: driver/service state changes, Windows Update, AV scans,
+    # software installers, etc. Matching on that path alone meant nearly
+    # every account on every machine triggered a "T1547 — Registry Run
+    # key modified" detection on almost every pipeline cycle, regardless
+    # of whether anything malicious happened. That false positive was
+    # scoring high enough (0.70) to hit the mfa_threshold and trigger
+    # automatic session revocation / NOC alerts against accounts
+    # (including built-in SYSTEM/LOCAL SERVICE) that did nothing wrong.
+    #
+    # Real autorun persistence lives under Run/RunOnce/Winlogon Shell or
+    # Userinit. Detecting persistence via a *newly installed* service is
+    # a different, more specific signal (Sysmon Event ID 7045, or the
+    # service's ImagePath value) and shouldn't be folded into this same
+    # path-substring check.
+    RUN_KEYS = [
+        "\\currentversion\\run\\",
+        "\\currentversion\\runonce\\",
+        "\\winlogon\\shell",
+        "\\winlogon\\userinit",
+    ]
 
     return {
         "user":               user.split("\\")[-1],

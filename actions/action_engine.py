@@ -28,23 +28,65 @@ class ActionEngine:
         score:     float,
         row:       dict,
         breakdown: dict
-    ):
+    ) -> dict:
+        """
+        Executes the action AND returns a confirmation dict describing
+        what actually happened — not just what was intended. This is
+        what the report shows under "Confirmation", distinct from the
+        generic "Action prévue" label.
+
+        Returns:
+            {
+                "action":  "block" | "mfa" | "alert" | "none",
+                "success": bool,   # did the underlying API call succeed?
+                "detail":  str,    # human-readable confirmation or failure
+            }
+        """
         logger.info(
             f"[{user}] score={score:.3f} "
             f"technique={breakdown.get('technique','unknown')}"
         )
 
         if score >= self.block_thresh:
-            self._block(user, score, breakdown)
-            self._revoke_sessions(user)
+            blocked = self._block(user, score, breakdown)
+            revoked = self._revoke_sessions(user)
             self._alert_noc(user, score, breakdown, "CRITICAL")
+            return {
+                "action":  "block",
+                "success": blocked,
+                "detail": (
+                    "Compte bloqué et sessions révoquées (Azure AD HTTP 204)"
+                    if blocked and revoked else
+                    f"Échec partiel — blocage={blocked}, révocation={revoked}. Voir logs ActionEngine."
+                ),
+            }
 
         elif score >= self.mfa_thresh:
-            self._revoke_sessions(user)
+            revoked = self._revoke_sessions(user)
             self._alert_noc(user, score, breakdown, "HIGH")
+            return {
+                "action":  "mfa",
+                "success": revoked,
+                "detail": (
+                    "Sessions révoquées — réauthentification MFA forcée (Azure AD HTTP 200)"
+                    if revoked else
+                    "Échec de révocation des sessions. Voir logs ActionEngine."
+                ),
+            }
 
         elif score >= self.alert_thresh:
             self._alert_noc(user, score, breakdown, "MEDIUM")
+            return {
+                "action":  "alert",
+                "success": True,
+                "detail":  "Alerte envoyée au NOC — aucune action automatique sur le compte",
+            }
+
+        return {
+            "action":  "none",
+            "success": True,
+            "detail":  "Aucune action requise — score sous le seuil d'alerte",
+        }
 
     # ── GET TOKEN ─────────────────────────────
     def _get_token(self) -> str:
@@ -80,14 +122,15 @@ class ActionEngine:
             logger.error(f"Get user ID error for '{upn}': {e}")
         return None
 
-    # ── BLOCK USER ────────────────────────────
-    def _block(self, user: str, score: float, breakdown: dict):
+    # ── BLOCK USER — now returns bool ─────────
+    def _block(self, user: str, score: float, breakdown: dict) -> bool:
         if not self.config["actions"].get("block_users", True):
-            return
+            logger.info(f"[{user}] block_users disabled in config — skipped")
+            return False
 
         uid = self._get_user_id(user)
         if not uid:
-            return
+            return False
 
         try:
             r = requests.patch(
@@ -101,19 +144,23 @@ class ActionEngine:
                     f"[{user}] ACCOUNT BLOCKED "
                     f"score={score:.3f}"
                 )
+                return True
             else:
                 logger.error(f"Block failed: {r.text}")
+                return False
         except Exception as e:
             logger.error(f"Block error: {e}")
+            return False
 
-    # ── REVOKE SESSIONS ───────────────────────
-    def _revoke_sessions(self, user: str):
+    # ── REVOKE SESSIONS — now returns bool ────
+    def _revoke_sessions(self, user: str) -> bool:
         if not self.config["actions"].get("force_mfa", True):
-            return
+            logger.info(f"[{user}] force_mfa disabled in config — skipped")
+            return False
 
         uid = self._get_user_id(user)
         if not uid:
-            return
+            return False
 
         try:
             r = requests.post(
@@ -124,10 +171,13 @@ class ActionEngine:
                 logger.warning(
                     f"[{user}] SESSIONS REVOKED — MFA forced"
                 )
+                return True
             else:
                 logger.error(f"Revoke failed: {r.text}")
+                return False
         except Exception as e:
             logger.error(f"Revoke error: {e}")
+            return False
 
     # ── ALERT NOC ─────────────────────────────
     def _alert_noc(
@@ -137,6 +187,10 @@ class ActionEngine:
         breakdown: dict,
         level:     str
     ):
+        if not self.webhook:
+            logger.info(f"[{user}] NOC webhook not configured — skipped")
+            return
+
         payload = {
             "alert_level":   level,
             "user":          user,

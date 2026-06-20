@@ -33,6 +33,23 @@ class SmartBuffer:
         "lsass_dump_score",
     ]
 
+    # FIX: built-in Windows security principals are not Entra ID
+    # identities. They have no UPN, so ActionEngine._get_user_id()
+    # always 404s for them ("Get user ID failed for 'system@...'",
+    # "...for 'local service@...'", etc.) and every enforcement action
+    # (force-MFA / revoke sessions / block) silently no-ops after
+    # logging an error. Worse, these accounts generate constant
+    # ordinary background activity (service installs, driver loads)
+    # that trips detection rules and produces noisy false-positive
+    # alerts every pipeline cycle. There is nothing useful to do with
+    # these as "users" in this system, so they're dropped at ingestion.
+    NON_HUMAN_ACCOUNTS = {
+        "system",
+        "local service",
+        "network service",
+        "anonymous logon",
+    }
+
     def __init__(self, config: dict):
         self.max_size     = config["buffer"]["max_size"]
         self.identity_map = {
@@ -65,6 +82,17 @@ class SmartBuffer:
         # real Entra ID UPN prefix (e.g. "alice"). Map it so all
         # collectors converge on one profile per real person.
         canonical = self.identity_map.get(user.lower(), user.lower())
+
+        # FIX: drop built-in/machine accounts before they ever reach a
+        # profile or detection rule. Computer accounts (created by
+        # Active Directory/Azure AD join) always end in "$" — those
+        # aren't human identities either.
+        if canonical in self.NON_HUMAN_ACCOUNTS or canonical.endswith("$"):
+            logger.debug(
+                f"Dropped event for non-human account '{canonical}'"
+            )
+            return
+
         if canonical != user:
             event["user"] = canonical
         user = canonical
