@@ -219,6 +219,17 @@ class MitreDetectionEngine:
 
     # ── T1547 — Persistence ───────────────────
     def _check_persistence(self, f, user, machine, ts):
+        """
+        NOTE: persistence_keys alone used to score 0.7 confidence on
+        its own. Many legitimate apps (cloud sync clients, browser
+        updaters, conferencing tools) write Run keys on every install
+        or update, completely benign. Combined with parser.py's RUN_KEYS
+        now being much narrower (see processing/parser.py), this still
+        fires on a single legitimate write. If you keep seeing false
+        positives after the parser fix, consider requiring TWO signals
+        here (e.g. persistence_keys AND suspicious_writes) before
+        returning a detection at all, rather than persistence_keys alone.
+        """
         evidence   = []
         confidence = 0.0
 
@@ -242,6 +253,16 @@ class MitreDetectionEngine:
 
     # ── T1078.002 — Privilege Escalation ──────
     def _check_privilege_escalation(self, f, user, machine, ts):
+        """
+        NOTE: elevated_procs > 3 used to add +0.2 confidence completely
+        on its own, with no other signal required. On any actively-used
+        Windows machine, more than 3 high-integrity processes in a
+        single collection window is normal background noise, not
+        evidence of anything. Raised the threshold substantially AND
+        now require it to co-occur with group_change or role_assigned
+        (a real identity-side signal) before it contributes at all,
+        instead of firing as a standalone detection.
+        """
         evidence   = []
         confidence = 0.0
 
@@ -253,7 +274,7 @@ class MitreDetectionEngine:
             confidence += 0.5
             evidence.append("New role assigned")
 
-        if f.get("elevated_procs", 0) > 3:
+        if confidence > 0 and f.get("elevated_procs", 0) > 15:
             confidence += 0.2
             evidence.append("Multiple elevated processes")
 

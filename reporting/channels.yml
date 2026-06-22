@@ -26,7 +26,7 @@ channels:
 
   # ── Gmail — CISO personal inbox, high severity only ───────────────
   - name: ciso_gmail
-    url: "mailto://alerts.bot:${GMAIL_APP_PASSWORD}@gmail.com?to=ciso@harmonytech.com"
+    url: "mailto://marwanhamdaoui2020:mjmzsrjtdkihjppb@gmail.com?to=marwanhamdaoui2020@gmail.com"
     audience: executive
     min_severity: high
     enabled: true

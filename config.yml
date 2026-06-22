@@ -39,6 +39,10 @@ scoring:
   alert_threshold:   0.50
   mfa_threshold:     0.70
   block_threshold:   0.85
+  mfa_failed_attempts_threshold: 3   # new
+  mfa_reauth_window_mins: 15         # backstop only now
+  action_cooldown_mins: 30
+
 
 actions:
   noc_webhook: ""

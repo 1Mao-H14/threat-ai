@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alerte Sécurité — alice — CRITIQUE</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --border:   #30363d;
+  --text:     #e6edf3;
+  --muted:    #8b949e;
+  --accent:   #58a6ff;
+}
+body {
+  font-family: -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 0;
+}
+.page { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Header */
+.header { border-bottom: 1px solid var(--border); padding-bottom: 28px; margin-bottom: 32px; }
+.header-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+.logo { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.logo strong { color:var(--accent); font-size:15px; display:block; letter-spacing:.04em; margin-bottom:2px; }
+.badge {
+  padding: 6px 16px; border-radius: 4px; font-size:12px;
+  font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+}
+.meta { margin-top:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; }
+.meta-item { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:12px 16px; }
+.meta-item .label { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:4px; }
+.meta-item .value { font-size:15px; font-weight:600; }
+
+/* Score bar */
+.score-wrap { margin:28px 0; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px 24px; }
+.score-label { font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:10px; }
+.score-bar-bg { height:8px; background:#21262d; border-radius:4px; overflow:hidden; }
+.score-bar-fill { height:100%; border-radius:4px; transition:width .6s; }
+.score-number { margin-top:8px; font-size:28px; font-weight:700; }
+
+/* Sections */
+.section { margin-bottom:24px; }
+.section-title {
+  font-size:10px; text-transform:uppercase; letter-spacing:.12em;
+  color:var(--muted); margin-bottom:10px; padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px 20px; }
+.card + .card { margin-top:10px; }
+
+/* Action banner */
+.action-banner {
+  border-radius:8px; padding:16px 20px;
+  border-left:4px solid;
+  display:flex; align-items:center; gap:14px;
+  font-weight:600; font-size:15px;
+}
+.action-icon { font-size:22px; }
+
+/* Financial cards */
+.fin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
+.fin-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; text-align:center; }
+.fin-card .fin-label { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:6px; }
+.fin-card .fin-amount { font-size:22px; font-weight:700; }
+.fin-card.central { border-color:var(--accent); }
+.fin-card.central .fin-amount { color:var(--accent); }
+.multipliers { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.mult-row { display:flex; align-items:center; gap:10px; font-size:13px; }
+.mult-badge {
+  background:#1f2937; border:1px solid #374151; border-radius:4px;
+  padding:2px 8px; font-size:11px; font-weight:700; min-width:42px; text-align:center; color:#f59e0b;
+}
+.mult-reason { color:var(--muted); font-size:12px; }
+.downtime-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.dt-item { background:#0d1117; border-radius:6px; padding:12px 14px; }
+.dt-item .dt-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; }
+.dt-item .dt-val { font-size:16px; font-weight:600; }
+.gdpr-box { background:#1a0a0a; border:1px solid #5c1a1a; border-radius:6px; padding:14px 16px; margin-top:10px; }
+.gdpr-box .gdpr-title { color:#ff6b6b; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.ref-box { background:#0d1117; border-left:3px solid var(--border); padding:10px 14px; margin-top:10px; font-size:12px; color:var(--muted); border-radius:0 4px 4px 0; }
+
+/* Steps */
+.steps { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.steps li { display:flex; gap:12px; align-items:flex-start; font-size:14px; }
+.step-num { background:var(--accent); color:#000; border-radius:50%; width:22px; height:22px;
+  font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.assumption { font-size:11px; color:var(--muted); border-top:1px solid var(--border);
+  padding-top:10px; margin-top:10px; line-height:1.7; }
+
+/* Footer */
+.footer { margin-top:48px; border-top:1px solid var(--border); padding-top:18px;
+  font-size:11px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+@media(max-width:600px){
+  .fin-grid { grid-template-columns:1fr; }
+  .downtime-grid { grid-template-columns:1fr; }
+  .header-top { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <strong>ZeroTrust AI</strong>
+        Rapport d'incident — Confidentiel Direction
+      </div>
+      <span class="badge" style="background:#2d0a08;color:#ff3b30;border:1px solid #ff3b30">
+        CRITIQUE
+      </span>
+    </div>
+    <div class="meta">
+      <div class="meta-item"><div class="label">Utilisateur</div><div class="value">alice</div></div>
+      <div class="meta-item"><div class="label">Détecté le</div><div class="value" style="font-size:13px">21/06/2026 à 13:04 UTC</div></div>
+      <div class="meta-item"><div class="label">Technique principale</div>
+        <div class="value" style="font-size:13px">T1003 — OS Credential Dumping</div></div>
+      <div class="meta-item"><div class="label">Tactique</div>
+        <div class="value" style="font-size:13px">Credential Access</div></div>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="score-wrap">
+    <div class="score-label">Score de risque</div>
+    <div class="score-bar-bg">
+      <div class="score-bar-fill" style="width:100%;background:#ff3b30"></div>
+    </div>
+    <div class="score-number" style="color:#ff3b30">100%</div>
+  </div>
+
+  <!-- WHAT HAPPENED -->
+  <div class="section">
+    <div class="section-title">Ce qui s'est passé</div>
+    <div class="card" style="font-size:15px;line-height:1.7">Tentative de vol des mots de passe stockés en mémoire.</div>
+  </div>
+
+  <!-- ACTION TAKEN -->
+  <div class="section">
+    <div class="section-title">Action automatique prise</div>
+    <div class="action-banner" style="background:#2d0a08;border-color:#ff3b30">
+      <span class="action-icon">🔒</span>
+      <span style="color:#ff3b30">Compte bloqué automatiquement</span>
+    </div>
+    <div style="margin-top:8px;font-size:13px;color:#3fb950">
+      ✅ Confirmation : Compte bloqué et sessions révoquées (Azure AD HTTP 204)
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="section">
+    <div class="section-title">Recommandation immédiate</div>
+    <div class="card">Vérifier l'identité physiquement avant toute réactivation. Contacter l'équipe sécurité immédiatement.</div>
+  </div>
+
+  <!-- FINANCIAL IMPACT -->
+  
+        <div class="section">
+          <div class="section-title">Impact financier estimé — pire cas</div>
+          <div class="fin-grid">
+            <div class="fin-card">
+              <div class="fin-label">Fourchette basse</div>
+              <div class="fin-amount">€40,000</div>
+            </div>
+            <div class="fin-card central">
+              <div class="fin-label">Scénario central</div>
+              <div class="fin-amount">€360,000</div>
+            </div>
+            <div class="fin-card">
+              <div class="fin-label">Pire cas</div>
+              <div class="fin-amount">€1,456,000</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">Facteurs aggravants détectés</div>
+            <div class="multipliers">
+          <div class="mult-row">
+            <span class="mult-badge">×2.8</span>
+            <div>
+              <span>Chiffrement + suppression sauvegardes</span>
+              <span class="mult-reason"> — Extensions modifiées ET vssadmin delete détecté</span>
+            </div>
+          </div>
+          <div class="mult-row">
+            <span class="mult-badge">×2.0</span>
+            <div>
+              <span>Dump mémoire identifiants (confirmé)</span>
+              <span class="mult-reason"> — lsass.exe — masque d'accès dump confirmé</span>
+            </div>
+          </div>
+          <div class="mult-row">
+            <span class="mult-badge">×1.3</span>
+            <div>
+              <span>Persistance établie</span>
+              <span class="mult-reason"> — Clés Run modifiées</span>
+            </div>
+          </div></div>
+            
+            
+            <div class="ref-box">
+              <strong>Référence sectorielle</strong> — Coût moyen mondial d'une violation (moyenne toutes tailles)<br>
+              €444,000 – €4,670,000
+              &nbsp;·&nbsp; <em>IBM, Cost of a Data Breach Report 2025</em><br>
+              ⚠ Moyennes sectorielles — pas une prédiction pour votre organisation.
+            </div>
+            <div class="assumption">Vecteur supposé : credential_dump  (technique T1003) &bull; Taille organisation configurée : smb &bull; Multiplicateur combiné plafonné à ×8 (hypothèse conservative divulguée) &bull; Coûts indirects — réputation, attrition clients — NON inclus &bull; ESTIMATION PIRE CAS — ne pas utiliser comme prévision comptable</div>
+          </div>
+        </div>
+
+  <!-- NEXT STEPS -->
+  <div class="section">
+    <div class="section-title">Prochaines étapes</div>
+    <div class="card"><ul class="steps"><li><span class="step-num">1</span><span>Vérifier si d'autres comptes ont été compromis</span></li><li><span class="step-num">2</span><span>Changer tous les mots de passe des systèmes impactés</span></li><li><span class="step-num">3</span><span>Activer la journalisation avancée sur les systèmes concernés</span></li><li><span class="step-num">4</span><span>Notifier la direction et le DPO</span></li><li><span class="step-num">5</span><span>Évaluer l'obligation de notification RGPD (72h si données personnelles)</span></li></ul></div>
+  </div>
+
+  <div class="footer">
+    <span>ZeroTrust AI — Rapport généré automatiquement</span>
+    <span>Pour le rapport technique complet, contactez votre équipe SOC.</span>
+  </div>
+</div>
+</body>
+</html>
