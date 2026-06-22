@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>[CRITICAL] bob@m</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:      #0a0e14;
+  --surface: #0d1117;
+  --panel:   #161b22;
+  --border:  #21262d;
+  --text:    #cdd9e5;
+  --muted:   #636e7b;
+  --green:   #3fb950;
+  --yellow:  #d29922;
+  --red:     #f85149;
+  --orange:  #db6d28;
+  --blue:    #58a6ff;
+  --purple:  #bc8cff;
+  --mono: 'JetBrains Mono','Fira Code','Cascadia Code',monospace;
+}
+body { font-family:var(--mono); background:var(--bg); color:var(--text); font-size:13px; line-height:1.6; }
+.page { max-width:1000px; margin:0 auto; padding:32px 20px 80px; }
+
+/* Header bar */
+.topbar {
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  padding:16px 20px; margin-bottom:24px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.topbar-left .product { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--blue); font-weight:700; }
+.topbar-left .subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
+.sev-pill {
+  padding:4px 14px; border-radius:20px; font-size:11px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+}
+
+/* Meta grid */
+.meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:24px; }
+.meta-cell { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:12px 14px; }
+.meta-cell .k { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:3px; }
+.meta-cell .v { font-weight:600; font-size:14px; }
+
+/* Section */
+.block { margin-bottom:20px; }
+.block-title {
+  font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted);
+  margin-bottom:8px; display:flex; align-items:center; gap:8px;
+}
+.block-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* MITRE card */
+.technique-card { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px 16px; margin-bottom:8px; }
+.tech-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.tech-id { color:var(--blue); font-weight:700; font-size:13px; }
+.tech-name { color:var(--text); font-weight:600; }
+.tech-tactic { font-size:11px; color:var(--purple); text-transform:uppercase; letter-spacing:.06em; }
+.conf-bar-bg { height:4px; background:var(--border); border-radius:2px; margin:8px 0 6px; }
+.conf-bar-fill { height:100%; border-radius:2px; }
+.evidence-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.evidence-pill {
+  background:#1c2128; border:1px solid var(--border); border-radius:4px;
+  padding:2px 10px; font-size:11px; color:var(--yellow);
+}
+.action-pill { font-size:11px; font-weight:700; padding:3px 10px; border-radius:4px; }
+
+/* Breakdown bars */
+.feat-row { display:flex; align-items:center; gap:10px; margin-bottom:5px; font-size:12px; }
+.feat-name { color:var(--muted); min-width:180px; }
+.feat-bar-bg { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.feat-bar-fill { height:100%; border-radius:3px; background: linear-gradient(90deg,#1f6feb,var(--blue)); }
+.feat-val { color:var(--blue); min-width:48px; text-align:right; }
+
+/* Raw feature table */
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th { background:var(--surface); color:var(--muted); text-align:left; padding:6px 10px;
+     border-bottom:1px solid var(--border); text-transform:uppercase; font-size:10px; letter-spacing:.08em; }
+td { padding:5px 10px; border-bottom:1px solid var(--border); }
+tr:last-child td { border-bottom:none; }
+.warn { color:var(--red); font-weight:700; }
+.ok   { color:var(--green); }
+
+/* Financial mini block */
+.fin-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.fin-mini-cell { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:10px 12px; }
+.fin-mini-cell .lbl { font-size:10px; color:var(--muted); margin-bottom:3px; }
+.fin-mini-cell .val { font-size:15px; font-weight:700; color:var(--blue); }
+
+.footer { margin-top:40px; border-top:1px solid var(--border); padding-top:14px;
+  font-size:11px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+
+@media(max-width:640px){ .fin-mini{grid-template-columns:1fr;} .meta-grid{grid-template-columns:1fr 1fr;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="product">ZeroTrust AI — Rapport Technique SOC</div>
+      <div class="subtitle">Classification : CONFIDENTIEL ÉQUIPE SÉCURITÉ</div>
+    </div>
+    <span class="sev-pill" style="background:#2d0a08;color:#ff3b30;border:1px solid #ff3b30">
+      CRITIQUE
+    </span>
+  </div>
+
+  <!-- META -->
+  <div class="meta-grid">
+    <div class="meta-cell"><div class="k">Utilisateur</div><div class="v">bob</div></div>
+    <div class="meta-cell"><div class="k">Machine</div><div class="v" style="font-size:12px">m</div></div>
+    <div class="meta-cell"><div class="k">Score de risque</div><div class="v" style="color:#ff3b30">94%</div></div>
+    <div class="meta-cell"><div class="k">Fenêtre d'analyse</div><div class="v" style="font-size:12px">2026-06-18T02:00</div></div>
+    <div class="meta-cell"><div class="k">Événements analysés</div><div class="v">5</div></div>
+    <div class="meta-cell"><div class="k">Généré le</div><div class="v" style="font-size:12px">21/06/2026 à 23:34 UTC</div></div>
+  </div>
+
+  <!-- MITRE -->
+  <div class="block">
+    <div class="block-title">Détections MITRE ATT&CK</div>
+    
+        <div class="technique-card">
+          <div class="tech-header">
+            <div>
+              <span class="tech-id">T1486</span>
+              <span class="tech-name"> — Data Encrypted for Impact</span><br>
+              <span class="tech-tactic">Impact</span>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:18px;font-weight:700;color:#ff3b30">100%</div>
+              <div style="font-size:10px;color:var(--muted)">confiance</div>
+            </div>
+          </div>
+          <div class="conf-bar-bg">
+            <div class="conf-bar-fill" style="width:100%;background:#ff3b30"></div>
+          </div>
+          <div class="evidence-list"><span class="evidence-pill">x</span></div>
+          <div style="margin-top:8px">
+            <span class="action-pill" style="background:#3d0000;color:#ff6b6b;border:1px solid #7f1d1d">ACTION: BLOQUER</span>
+          </div>
+        </div>
+  </div>
+
+  <!-- SCORE BREAKDOWN -->
+  <div class="block">
+    <div class="block-title">Contribution au score (par feature)</div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:16px 18px">
+      
+        <div class="feat-row">
+          <span class="feat-name">extension_changes</span>
+          <div class="feat-bar-bg"><div class="feat-bar-fill" style="width:100%"></div></div>
+          <span class="feat-val">+0.7000</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- RAW FEATURES -->
+  <div class="block">
+    <div class="block-title">Indicateurs bruts (valeurs non-nulles)</div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:auto">
+      <table>
+        <tr><th></th><th>Indicateur</th><th>Champ</th><th>Valeur</th></tr>
+        <tr><td class="warn">⚠</td><td>Changements extension</td><td><code>extension_changes</code></td><td class="warn">1</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ENTRA + ENDPOINT SUMMARY -->
+  <div class="block">
+    <div class="block-title">Synthèse activité</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px 16px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Entra ID</div>
+        <div>Signins: <strong>0</strong> &nbsp;|&nbsp; Échecs: <strong>0</strong></div>
+        <div>MFA: <strong>Non</strong> &nbsp;|&nbsp; Risque: <strong>0</strong></div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px 16px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Endpoint (Sysmon)</div>
+        <div>Processus: <strong>0</strong> &nbsp;|&nbsp; Réseau: <strong>0</strong></div>
+        <div>Fichiers: <strong>0</strong> &nbsp;|&nbsp; Registre: <strong>0</strong></div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="footer">
+    <span>ZeroTrust AI v1.0 — Rapport technique automatique</span>
+    <span>bob · m · score=0.9400</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZeroTrust AI — SOC Operations Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">ZT</div>
+    <div>
+      <div class="brand-title">ZeroTrust&nbsp;AI</div>
+      <div class="brand-sub">SOC Operations Dashboard</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="modeBadge" class="mode-badge demo">DEMO DATA</span>
+    <span class="live-dot" id="liveDot"></span>
+    <span class="muted" id="updated">—</span>
+    <button id="refreshBtn" class="btn ghost" title="Refresh now">⟳</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- KPI ROW -->
+  <section class="kpi-grid" id="kpiGrid"></section>
+
+  <!-- INFRA + DONUTS -->
+  <section class="grid grid-2-1">
+    <div class="panel">
+      <div class="panel-head"><h2>Infrastructure — Global View</h2>
+        <span class="muted" id="infraCount"></span></div>
+      <div class="table-wrap">
+        <table class="data-table" id="machineTable">
+          <thead><tr>
+            <th>Host</th><th>OS</th><th>Version</th><th>User</th>
+            <th>Status</th><th>Threats</th><th>Risk</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-head"><h2>Threat Severity</h2></div>
+        <div class="chart-sm"><canvas id="severityChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>OS Distribution</h2></div>
+        <div class="chart-sm"><canvas id="osChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USER RISK -->
+  <section class="panel">
+    <div class="panel-head"><h2>User Risk &amp; Deviation from Normal</h2>
+      <span class="muted">score vs personal baseline · σ = std-dev deviation</span></div>
+    <div class="table-wrap">
+      <table class="data-table" id="userTable">
+        <thead><tr>
+          <th>User</th><th>Host</th><th>Risk Score</th><th>Deviation</th>
+          <th>Trend</th><th>Top Technique</th><th>Status</th><th>Action</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BEHAVIOR CURVE + TOP ATTACKS -->
+  <section class="grid grid-1-1">
+    <div class="panel">
+      <div class="panel-head"><h2>User Behavior Variation</h2>
+        <select id="userSelect" class="select"></select></div>
+      <div class="chart-md"><canvas id="behaviorChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Top 10 ATT&amp;CK Techniques — Domain</h2></div>
+      <div class="chart-md"><canvas id="topAttackChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- TACTICS + FEED -->
+  <section class="grid grid-1-2">
+    <div class="panel">
+      <div class="panel-head"><h2>Tactics</h2></div>
+      <div class="chart-md"><canvas id="tacticChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Live Incident &amp; Action Feed</h2>
+        <span class="muted" id="feedCount"></span></div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>ZeroTrust AI — real-time SOC dashboard</span>
+    <span id="autoNote">auto-refresh every 5s</span>
+  </footer>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<!-- offline preview data; ignored when /api/snapshot is reachable -->
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

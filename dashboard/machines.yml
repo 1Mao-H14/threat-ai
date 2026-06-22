@@ -1,0 +1,30 @@
+# dashboard/machines.yml
+#
+# OPTIONAL machine inventory enrichment for the dashboard ONLY.
+# This file is SEPARATE from config.yml on purpose — config.yml is left
+# untouched. Add OS / version / status metadata per machine here so the
+# infrastructure view shows the real OS instead of "Windows / unknown".
+#
+# Fields (all optional except name):
+#   name         must match the machine name seen in telemetry / config.yml vms
+#   ip           management IP
+#   os           e.g. "Windows 11 Pro", "Windows Server"
+#   os_version   e.g. "23H2 (22631)", "2022 (20348)"
+#   primary_user the account normally on this host
+#   status       online | offline
+
+machines:
+  - name: AliceVm
+    ip: "10.0.0.5"
+    os: "Windows 11 Pro"
+    os_version: "23H2 (22631)"
+    primary_user: alice
+    status: online
+
+  # Add the rest of your fleet here, for example:
+  # - name: CharlieVm
+  #   ip: "10.0.0.7"
+  #   os: "Windows 11 Enterprise"
+  #   os_version: "23H2 (22631)"
+  #   primary_user: charlie
+  #   status: online
